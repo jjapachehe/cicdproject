@@ -34,4 +34,4 @@ steps:
       
 images:
   - 'us-east1-docker.pkg.dev/openwriteup/cicd/myapp:$BUILD_ID'
-logsBucket: "gs://amitow23comp"
+logsBucket: "gs://lab1-static-site-jhon"
