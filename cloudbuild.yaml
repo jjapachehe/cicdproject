@@ -1,47 +1,24 @@
 steps:
-  # Step 1: Install dependencies in a virtual environment
-  - name: 'python:3.9'
-    entrypoint: 'sh'
-    args:
-      - '-c'
-      - |
-          python -m venv venv && \
-          . venv/bin/activate && \
-          pip install --upgrade pip && \
-          pip install -r app/requirements.txt
+  # Paso 1: Instalar y Testear (Todo en uno para eficiencia)
+  - name: 'python:3.9'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+          pip install --upgrade pip
+          pip install -r app/requirements.txt
+          python -m unittest discover tests
 
- 
+  # Paso 2: Build de la imagen Docker
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'us-east1-docker.pkg.dev/my-project-batch-1-465611/souvik-registry/myapp:$BUILD_ID'
+      - '.'
 
-  # Step 2: Run tests in the same environment
-  - name: 'python:3.9'
-    entrypoint: 'sh'
-    args:
-      - '-c'
-      - |
-          python -m venv venv && \
-          . venv/bin/activate && \
-          pip install --upgrade pip && \
-          pip install -r app/requirements.txt && \
-          python -m unittest discover tests
-
- 
-
-  # Step 3: Build Docker image
-  - name: 'gcr.io/cloud-builders/docker'
-    args:
-      - 'build'
-      - '-t'
-      - 'us-east1-docker.pkg.dev/oval-turbine-495504-h2/mydockerresgistry-jhon/myapp:$BUILD_ID'
-      - '.'
-
- 
-
-  # Step 4: Push Docker image to Artifact Registry
-  - name: 'gcr.io/cloud-builders/docker'
-    args:
-      - 'push'
-      - 'us-east1-docker.pkg.dev/oval-turbine-495504-h2/mydockerresgistry-jhon/myapp:$BUILD_ID'
-      
+# El 'push' se maneja automáticamente si la imagen está en esta lista
 images:
-  - 'us-east1-docker.pkg.dev/openwriteup/cicd/myapp:$BUILD_ID'
+  - 'us-east1-docker.pkg.dev/my-project-batch-1-465611/souvik-registry/myapp:$BUILD_ID'
+
 logsBucket: "gs://lab1-static-site-jhon"
